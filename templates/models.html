@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="mb-16">
+    <span class="text-primary mb-3 block tracking-widest uppercase text-xs font-bold">Performance Benchmarks</span>
+    <h1 class="text-4xl text-white mb-3 font-bold">Model Performance</h1>
+    <p class="text-text-muted max-w-2xl">Evaluation of all three models on held-out test data — accuracy, F1 score, precision, and recall.</p>
+</section>
+
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-20">
+    {% for m in model_cards %}
+    <div class="glass-card p-8 rounded-xl flex flex-col glow-teal transition-all duration-300 relative overflow-hidden">
+        <div class="absolute top-0 right-0">
+            <div class="px-3 py-1 font-bold text-[10px] uppercase tracking-widest rounded-bl-lg" style="background:{{ m.tag_color }}; color:#00181c;">{{ m.tag }}</div>
+        </div>
+        <div class="flex justify-between items-start mb-8">
+            <div>
+                <h3 class="text-lg font-semibold text-white">{{ m.name }}</h3>
+                <p class="text-text-muted uppercase text-[10px] mt-1">{{ m.subtitle }}</p>
+            </div>
+            <span class="text-2xl">{{ m.icon }}</span>
+        </div>
+        <div class="space-y-4 flex-grow">
+            <div class="flex justify-between items-center bg-surface-container-lowest/50 p-4 rounded-lg">
+                <span class="text-sm text-on-surface-variant">Accuracy</span>
+                <span class="text-sm font-bold text-primary">{{ m.accuracy }}%</span>
+            </div>
+            <div class="flex justify-between items-center bg-surface-container-lowest/50 p-4 rounded-lg">
+                <span class="text-sm text-on-surface-variant">F1 Score</span>
+                <span class="text-sm font-bold text-tertiary">{{ m.f1 }}</span>
+            </div>
+            <div class="flex justify-between items-center bg-surface-container-lowest/50 p-4 rounded-lg">
+                <span class="text-sm text-on-surface-variant">Precision</span>
+                <span class="text-sm font-bold text-secondary">{{ m.precision }}</span>
+            </div>
+            <div class="flex justify-between items-center bg-surface-container-lowest/50 p-4 rounded-lg">
+                <span class="text-sm text-on-surface-variant">Recall</span>
+                <span class="text-sm font-bold text-on-secondary-container">{{ m.recall }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter mb-gutter">
+    <div class="glass-card p-10 rounded-xl">
+        <div class="flex justify-between items-center mb-12">
+            <h2 class="text-2xl text-white font-semibold">Accuracy Comparison</h2>
+            <span class="text-outline">📊</span>
+        </div>
+        <div class="space-y-10">
+            {% for m in sorted_models %}
+            <div class="space-y-3">
+                <div class="flex justify-between text-xs text-on-surface-variant uppercase tracking-wider">
+                    <span>{{ m.name }}</span>
+                    <span class="text-white font-bold">{{ m.accuracy }}%</span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
+                    <div class="h-full rounded-full" style="width:{{ m.accuracy }}%; background:{{ m.bar_color }};"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="glass-card p-10 rounded-xl">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-2xl text-white font-semibold">Confusion Matrix</h2>
+                <p class="text-tertiary uppercase text-[10px] mt-1 tracking-widest">Model: {{ confusion_model }}</p>
+            </div>
+            <span class="text-outline">▦</span>
+        </div>
+        <img src="data:image/png;base64,{{ confusion_matrix_img }}" class="w-full rounded-lg" alt="Confusion matrix">
+    </div>
+</section>
+
+<section class="glass-card p-10 rounded-xl">
+    <h2 class="text-2xl text-white mb-8 font-semibold">Random Forest — Feature Importance</h2>
+    <img src="data:image/png;base64,{{ feature_importance_img }}" class="w-full rounded-lg" alt="Feature importance">
+</section>
+
+{% endblock %}

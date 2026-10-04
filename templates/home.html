@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
+    <div class="flex flex-col gap-8">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 w-fit">
+            <span class="text-primary text-lg">⚡</span>
+            <span class="font-medium text-xs text-primary uppercase tracking-wider">Ensemble Learning · Micro-Project</span>
+        </div>
+        <h1 class="text-5xl md:text-6xl text-on-surface leading-[1.1] font-bold">
+            Decode Your Mind. <br>
+            <span class="gradient-text">Predict Your Stress.</span>
+        </h1>
+        <p class="text-text-muted text-lg md:text-xl leading-relaxed max-w-xl">
+            StressLens uses Decision Tree, Random Forest, and Gradient Boosting models
+            trained on real lifestyle and sleep data to predict whether your stress
+            level is Low, Medium, or High — instantly.
+        </p>
+        <div class="flex flex-wrap gap-5 mt-2">
+            <a href="{{ url_for('predict') }}" class="px-8 py-4 bg-primary text-on-primary font-bold rounded-xl cyan-glow hover:shadow-[0_0_40px_rgba(68,216,241,0.3)] transition-all duration-300 transform hover:-translate-y-1 active:scale-95 flex items-center gap-2">
+                Get Started →
+            </a>
+            <a href="{{ url_for('models_page') }}" class="px-8 py-4 bg-transparent border border-primary/30 text-primary font-bold rounded-xl hover:bg-primary/5 transition-all duration-300">
+                View Model Results
+            </a>
+        </div>
+    </div>
+    <div class="relative mt-12 lg:mt-0">
+    <div class="absolute -inset-10 bg-primary/10 blur-[100px] rounded-full animate-pulse-soft"></div>
+    <div class="relative glass-card p-10 rounded-3xl overflow-hidden aspect-square flex items-center justify-center cyan-glow">
+        <img src="{{ url_for('static', filename='hero-image.png') }}"
+             alt="StressLens visual"
+             style="width:100%; height:100%; object-fit:contain; opacity:0.85; mix-blend-mode:screen;">
+    </div>
+</div>
+</section>
+
+<section class="mt-32">
+    <div class="glass-card rounded-[2rem] p-10 md:p-16 flex flex-wrap justify-around items-center gap-12 text-center cyan-glow">
+        <div class="flex flex-col gap-3">
+            <span class="text-5xl md:text-6xl font-bold gradient-text">{{ best_acc }}%</span>
+            <span class="text-xs font-bold text-text-muted uppercase tracking-[0.2em]">Best Accuracy ({{ best_model_name }})</span>
+        </div>
+        <div class="hidden md:block w-px h-20 bg-white/10"></div>
+        <div class="flex flex-col gap-3">
+            <span class="text-5xl md:text-6xl font-bold gradient-text">{{ dataset_size }}</span>
+            <span class="text-xs font-bold text-text-muted uppercase tracking-[0.2em]">People in Dataset</span>
+        </div>
+        <div class="hidden md:block w-px h-20 bg-white/10"></div>
+        <div class="flex flex-col gap-3">
+            <span class="text-5xl md:text-6xl font-bold gradient-text">{{ num_features }}</span>
+            <span class="text-xs font-bold text-text-muted uppercase tracking-[0.2em]">Lifestyle Features Used</span>
+        </div>
+    </div>
+</section>
+
+<section class="mt-32">
+    <div class="flex flex-col items-center text-center mb-16 gap-4">
+        <h2 class="text-3xl md:text-4xl text-on-surface font-bold">Three Models, Compared Fairly</h2>
+        <p class="text-text-muted max-w-2xl text-lg">Each trained and evaluated on the same real lifestyle data, so you can see exactly how baseline, bagging, and boosting compare.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass-card p-10 rounded-2xl flex flex-col gap-6 cyan-glow-hover transition-all duration-500">
+            <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-2xl">🌳</div>
+            <h3 class="text-xl font-bold text-on-surface">Decision Tree</h3>
+            <p class="text-base text-text-muted leading-relaxed">A single tree of yes/no questions on your lifestyle data. Simple, interpretable, and used here as the baseline model.</p>
+        </div>
+        <div class="glass-card p-10 rounded-2xl flex flex-col gap-6 cyan-glow-hover transition-all duration-500">
+            <div class="w-14 h-14 bg-tertiary/10 rounded-xl flex items-center justify-center text-2xl">🌲</div>
+            <h3 class="text-xl font-bold text-on-surface">Random Forest</h3>
+            <p class="text-base text-text-muted leading-relaxed">An ensemble of many decision trees (bagging) that vote together, reducing overfitting and revealing which lifestyle factors matter most.</p>
+        </div>
+        <div class="glass-card p-10 rounded-2xl flex flex-col gap-6 cyan-glow-hover transition-all duration-500">
+            <div class="w-14 h-14 bg-secondary/10 rounded-xl flex items-center justify-center text-2xl">⚡</div>
+            <h3 class="text-xl font-bold text-on-surface">Gradient Boosting</h3>
+            <p class="text-base text-text-muted leading-relaxed">Trees built sequentially, each correcting the last one's mistakes (boosting) — often the most accurate of the three.</p>
+        </div>
+    </div>
+</section>
+
+<section class="mt-24">
+    <h3 class="text-primary text-xs font-bold uppercase tracking-widest mb-4">Data Preview</h3>
+    <div class="glass-card rounded-xl p-4 overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead>
+                <tr class="text-text-muted uppercase text-[10px] tracking-wider border-b border-white/5">
+                    {% for col in preview_columns %}<th class="px-4 py-3">{{ col }}</th>{% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in preview_rows %}
+                <tr class="border-b border-white/5">
+                    {% for col in preview_columns %}<td class="px-4 py-3 text-on-surface-variant">{{ row[col] }}</td>{% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

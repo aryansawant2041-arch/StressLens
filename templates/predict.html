@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-gutter">
+    <!-- Left: Control Panel -->
+    <aside class="lg:col-span-1">
+        <div class="glass-card rounded-xl p-8 h-fit lg:sticky lg:top-32">
+            <div class="mb-8 flex items-center gap-3">
+                <span class="text-primary">🎛️</span>
+                <h2 class="text-lg font-semibold text-on-surface">Data Input</h2>
+            </div>
+            <form id="predict-form" class="space-y-8">
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] text-text-muted uppercase tracking-wider">Sleep Duration</label>
+                        <span class="text-primary font-mono text-sm" id="sleep-val">7.0h</span>
+                    </div>
+                    <input id="sleep_duration" max="10" min="3" oninput="document.getElementById('sleep-val').innerText = parseFloat(this.value).toFixed(1) + 'h'" step="0.1" type="range" value="7.0" class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary">
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] text-text-muted uppercase tracking-wider">Quality of Sleep</label>
+                        <span class="text-primary font-mono text-sm" id="quality-val">6</span>
+                    </div>
+                    <input id="quality_of_sleep" max="10" min="1" oninput="document.getElementById('quality-val').innerText = this.value" type="range" value="6" class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary">
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] text-text-muted uppercase tracking-wider">Physical Activity</label>
+                        <span class="text-primary font-mono text-sm" id="activity-val">50</span>
+                    </div>
+                    <input id="physical_activity" max="100" min="0" oninput="document.getElementById('activity-val').innerText = this.value" type="range" value="50" class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary">
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] text-text-muted uppercase tracking-wider">Daily Steps</label>
+                        <span class="text-primary font-mono text-sm" id="steps-val">6,000</span>
+                    </div>
+                    <input id="daily_steps" max="20000" min="1000" oninput="document.getElementById('steps-val').innerText = Number(this.value).toLocaleString()" step="500" type="range" value="6000" class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary">
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] text-text-muted uppercase tracking-wider">Heart Rate</label>
+                        <span class="text-primary font-mono text-sm" id="hr-val">75 BPM</span>
+                    </div>
+                    <input id="heart_rate" max="120" min="50" oninput="document.getElementById('hr-val').innerText = this.value + ' BPM'" type="range" value="75" class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[11px] text-text-muted uppercase tracking-wider">BMI Category</label>
+                    <select id="bmi_category" class="w-full bg-surface-container-low border border-white/10 rounded-lg text-on-surface p-3 text-sm focus:border-primary outline-none">
+                        {% for c in bmi_classes %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[11px] text-text-muted uppercase tracking-wider">Occupation</label>
+                    <select id="occupation" class="w-full bg-surface-container-low border border-white/10 rounded-lg text-on-surface p-3 text-sm focus:border-primary outline-none">
+                        {% for c in occupation_classes %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[11px] text-text-muted uppercase tracking-wider">Age</label>
+                        <input id="age" class="w-full bg-surface-container-low border border-white/10 rounded-lg text-on-surface p-3 text-sm focus:border-primary outline-none" type="number" value="30" min="18" max="70">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[11px] text-text-muted uppercase tracking-wider">Gender</label>
+                        <select id="gender" class="w-full bg-surface-container-low border border-white/10 rounded-lg text-on-surface p-3 text-sm focus:border-primary outline-none">
+                            {% for c in gender_classes %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[11px] text-text-muted uppercase tracking-wider">Model</label>
+                    <select id="model_choice" class="w-full bg-surface-container-low border border-white/10 rounded-lg text-on-surface p-3 text-sm focus:border-primary outline-none">
+                        {% for m in model_names %}<option value="{{ m }}" {% if m == 'Gradient Boosting' %}selected{% endif %}>{{ m }}</option>{% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="mt-2 w-full py-4 bg-primary text-on-primary hover:bg-primary/90 transition-all rounded-xl font-bold tracking-wider flex items-center justify-center gap-2 active:scale-[0.98]">
+                    📊 GENERATE PREDICTION
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Right: Results -->
+    <div class="lg:col-span-3 space-y-gutter">
+        <div id="result-placeholder" class="glass-card rounded-xl p-12 text-center text-text-muted">
+            Fill in your data on the left and click <strong class="text-primary">Generate Prediction</strong> to see your result.
+        </div>
+
+        <div id="result-area" class="hidden space-y-gutter">
+            <div class="glass-card rounded-xl p-12 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden cyan-glow">
+                <div class="w-56 h-56 shrink-0 relative">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle class="gauge-bg" cx="50" cy="50" r="42"></circle>
+                        <circle id="gauge-fill" class="gauge-fill" cx="50" cy="50" r="42" stroke="#FFC107" stroke-dasharray="0 264"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="gauge-pct" class="font-mono text-4xl font-bold leading-none" style="color:#FFC107;">0%</span>
+                        <span class="text-[10px] text-text-muted mt-2 tracking-widest uppercase">Stress Index</span>
+                    </div>
+                </div>
+                <div class="flex-grow space-y-6">
+                    <div id="level-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border">
+                        <span id="level-dot" class="w-2 h-2 rounded-full"></span>
+                        <span id="level-text" class="text-xs font-bold uppercase"></span>
+                    </div>
+                    <div>
+                        <h1 id="result-title" class="text-3xl font-bold text-white mb-2"></h1>
+                        <p id="result-desc" class="text-on-surface-variant max-w-xl leading-relaxed"></p>
+                    </div>
+                    <div class="flex flex-wrap gap-6 border-t border-white/5 pt-6">
+                        <div class="flex items-center gap-2 text-sm text-text-muted">
+                            ✅ <span>Confidence: <span id="confidence-val" class="text-on-surface font-mono"></span></span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-text-muted">
+                            🌳 <span id="model-used-label"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-gutter">
+                <div class="glass-card rounded-xl p-8">
+                    <h3 class="text-lg font-semibold text-white mb-8 flex items-center gap-3">⚠️ Probable Contributing Factors</h3>
+                    <div id="stressors-list" class="space-y-8"></div>
+                </div>
+                <div class="glass-card rounded-xl p-8">
+                    <h3 class="text-lg font-semibold text-white mb-8 flex items-center gap-3">🛡️ Suggestions</h3>
+                    <div id="recommendations-list" class="space-y-6"></div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-xl h-64 md:h-80 overflow-hidden relative">
+                <div class="absolute inset-0 flex flex-col justify-between p-6 md:p-8 z-10 pointer-events-none">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-white tracking-[0.2em] bg-background/80 backdrop-blur-md px-4 py-1.5 rounded-lg border border-white/10 uppercase">Real-time Biometric Pulse</p>
+                        <div class="flex items-center gap-2 text-primary">
+                            <span class="text-[10px] font-bold">LIVE FEED</span>
+                            <span class="text-xl animate-pulse-subtle">📡</span>
+                        </div>
+                    </div>
+                </div>
+                <canvas id="pulse-canvas" class="absolute inset-0 w-full h-full"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const form = document.getElementById('predict-form');
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+        gender: document.getElementById('gender').value,
+        age: parseInt(document.getElementById('age').value),
+        occupation: document.getElementById('occupation').value,
+        sleep_duration: parseFloat(document.getElementById('sleep_duration').value),
+        quality_of_sleep: parseInt(document.getElementById('quality_of_sleep').value),
+        physical_activity: parseInt(document.getElementById('physical_activity').value),
+        bmi_category: document.getElementById('bmi_category').value,
+        heart_rate: parseInt(document.getElementById('heart_rate').value),
+        daily_steps: parseInt(document.getElementById('daily_steps').value),
+        model_choice: document.getElementById('model_choice').value,
+    };
+
+    const res = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.error) { alert(data.error); return; }
+
+    document.getElementById('result-placeholder').classList.add('hidden');
+    document.getElementById('result-area').classList.remove('hidden');
+
+    const colors = { "Low": "#4CAF50", "Medium": "#FFC107", "High": "#F44336" };
+    const color = colors[data.prediction];
+    const circumference = 2 * Math.PI * 42;
+    const fillLen = (data.stress_index / 100) * circumference;
+
+    const gaugeFill = document.getElementById('gauge-fill');
+    gaugeFill.setAttribute('stroke', color);
+    gaugeFill.setAttribute('stroke-dasharray', `${fillLen} ${circumference}`);
+
+    document.getElementById('gauge-pct').innerText = Math.round(data.stress_index) + '%';
+    document.getElementById('gauge-pct').style.color = color;
+
+    const badge = document.getElementById('level-badge');
+    badge.style.background = color + '1A';
+    badge.style.borderColor = color + '40';
+    document.getElementById('level-dot').style.background = color;
+    document.getElementById('level-text').style.color = color;
+    document.getElementById('level-text').innerText = data.prediction + ' Stress Level';
+
+    document.getElementById('result-title').innerText = 'Predicted Result: ' + data.prediction.toUpperCase();
+    document.getElementById('result-desc').innerText = data.description;
+    document.getElementById('confidence-val').innerText = data.confidence.toFixed(1) + '%';
+    document.getElementById('model-used-label').innerText = 'Model: ' + payload.model_choice;
+
+    const stressorsEl = document.getElementById('stressors-list');
+    stressorsEl.innerHTML = '';
+    data.top_factors.forEach(f => {
+        stressorsEl.innerHTML += `
+            <div class="space-y-3">
+                <div class="flex justify-between text-xs text-text-muted uppercase tracking-widest">
+                    <span>${f.name}</span><span style="color:${color}">${f.level}</span>
+                </div>
+                <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full" style="width:${f.pct}%; background:${color};"></div>
+                </div>
+            </div>`;
+    });
+
+    const recEl = document.getElementById('recommendations-list');
+    recEl.innerHTML = '';
+    data.recommendations.forEach(r => {
+        recEl.innerHTML += `
+            <div class="flex items-start gap-5 p-5 rounded-xl border border-white/5 bg-white/[0.02]">
+                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-lg">${r.icon}</div>
+                <div>
+                    <h4 class="text-sm font-semibold text-white">${r.title}</h4>
+                    <p class="text-xs text-text-muted mt-2 leading-relaxed">${r.text}</p>
+                </div>
+            </div>`;
+    });
+
+    document.getElementById('result-area').scrollIntoView({behavior: 'smooth', block: 'start'});
+
+    // Update the pulse animation to reflect this prediction
+    pulseState.color = color;
+    pulseState.heartRate = payload.heart_rate;
+    pulseState.stressIndex = data.stress_index;
+});
+
+// ---- Animated "Real-time Biometric Pulse" canvas ----
+const pulseCanvas = document.getElementById('pulse-canvas');
+const pctx = pulseCanvas.getContext('2d');
+let pulseState = { color: '#44d8f1', heartRate: 75, stressIndex: 30 };
+let pWidth, pHeight, t = 0;
+
+function resizePulseCanvas() {
+    pWidth = pulseCanvas.width = pulseCanvas.offsetWidth;
+    pHeight = pulseCanvas.height = pulseCanvas.offsetHeight;
+}
+window.addEventListener('resize', resizePulseCanvas);
+resizePulseCanvas();
+
+function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function drawPulse() {
+    pctx.clearRect(0, 0, pWidth, pHeight);
+    const midY = pHeight / 2;
+    const speed = 0.02 + (pulseState.heartRate / 100) * 0.02;
+    const amplitude = 10 + (pulseState.stressIndex / 100) * (pHeight * 0.28);
+
+    // Three overlapping wavy lines at different phases/opacities, like a biometric monitor
+    const waves = [
+        { offset: 0, alpha: 0.9, freq: 0.02 },
+        { offset: 2, alpha: 0.5, freq: 0.017 },
+        { offset: 4, alpha: 0.25, freq: 0.024 },
+    ];
+    waves.forEach(w => {
+        pctx.beginPath();
+        for (let x = 0; x <= pWidth; x += 4) {
+            const y = midY + Math.sin(x * w.freq + t * speed * 10 + w.offset) * amplitude * Math.sin(x * 0.003 + t * 0.01);
+            if (x === 0) pctx.moveTo(x, y); else pctx.lineTo(x, y);
+        }
+        pctx.strokeStyle = hexToRgba(pulseState.color, w.alpha);
+        pctx.lineWidth = 2;
+        pctx.stroke();
+    });
+
+    // Traveling dot along the front wave
+    const dotX = (t * 40) % pWidth;
+    const dotY = midY + Math.sin(dotX * 0.02 + t * speed * 10) * amplitude * Math.sin(dotX * 0.003 + t * 0.01);
+    pctx.beginPath();
+    pctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
+    pctx.fillStyle = pulseState.color;
+    pctx.shadowColor = pulseState.color;
+    pctx.shadowBlur = 12;
+    pctx.fill();
+    pctx.shadowBlur = 0;
+
+    t += 1;
+    requestAnimationFrame(drawPulse);
+}
+drawPulse();
+</script>
+{% endblock %}

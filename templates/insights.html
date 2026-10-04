@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+    <div>
+        <span class="text-primary mb-3 block tracking-widest uppercase text-xs font-bold">Biometric Intelligence</span>
+        <h2 class="text-4xl text-on-surface font-bold">Data Insights</h2>
+        <p class="text-text-muted mt-4 max-w-2xl leading-relaxed">Exploratory analysis of sleep, activity, and heart rate patterns across Low / Medium / High stress groups in the real dataset.</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+    <section class="glass-card p-8 rounded-xl flex flex-col">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="text-xl text-on-surface font-semibold">Correlation Heatmap</h3>
+                <p class="text-sm text-text-muted mt-1">Relationships between numeric lifestyle features</p>
+            </div>
+        </div>
+        <img src="data:image/png;base64,{{ plot_correlation }}" class="w-full rounded-lg" alt="Correlation heatmap">
+    </section>
+
+    <section class="glass-card p-8 rounded-xl flex flex-col">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="text-xl text-on-surface font-semibold">Stress Level Distribution</h3>
+                <p class="text-sm text-text-muted mt-1">How many people fall into each stress category</p>
+            </div>
+        </div>
+        <img src="data:image/png;base64,{{ plot_distribution }}" class="w-full rounded-lg" alt="Stress distribution">
+    </section>
+
+    <section class="glass-card p-8 rounded-xl flex flex-col">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="text-xl text-on-surface font-semibold">Sleep Duration vs Stress Level</h3>
+                <p class="text-sm text-text-muted mt-1">Recovery cycle impact analysis</p>
+            </div>
+        </div>
+        <img src="data:image/png;base64,{{ plot_sleep }}" class="w-full rounded-lg" alt="Sleep vs stress">
+    </section>
+
+    <section class="glass-card p-8 rounded-xl flex flex-col">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="text-xl text-on-surface font-semibold">Physical Activity vs Stress Level</h3>
+                <p class="text-sm text-text-muted mt-1">Exercise level correlation</p>
+            </div>
+        </div>
+        <img src="data:image/png;base64,{{ plot_activity }}" class="w-full rounded-lg" alt="Activity vs stress">
+    </section>
+</div>
+
+{% endblock %}

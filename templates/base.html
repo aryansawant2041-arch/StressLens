@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>StressLens</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+        extend: {
+            colors: {
+                "background": "#041329", "surface": "#041329", "surface-dim": "#041329",
+                "surface-glass": "rgba(4, 19, 41, 0.8)", "surface-container": "#112036",
+                "surface-container-low": "#0d1c32", "surface-container-lowest": "#010e24",
+                "surface-container-high": "#1c2a41", "surface-container-highest": "#27354c",
+                "surface-bright": "#2c3951", "surface-variant": "#27354c",
+                "primary": "#44d8f1", "primary-container": "#00bcd4", "on-primary": "#00363e",
+                "secondary": "#b6c6ed", "secondary-container": "#374767",
+                "tertiary": "#38debb", "tertiary-container": "#00c1a0",
+                "on-surface": "#d6e3ff", "on-background": "#d6e3ff",
+                "on-surface-variant": "#bbc9cc", "text-muted": "#8892B0",
+                "outline": "#869396", "outline-variant": "#3c494c",
+                "status-stable": "#4CAF50", "status-critical": "#F44336",
+                "border-cyan": "rgba(68, 216, 241, 0.2)",
+            },
+            borderRadius: { DEFAULT: "0.5rem", lg: "0.75rem", xl: "1rem", "2xl": "1.5rem", full: "9999px" },
+            spacing: { "margin-mobile": "24px", "margin-desktop": "64px", "container-max-width": "1440px", "gutter": "32px" },
+            fontFamily: { sans: ["Inter", "sans-serif"] },
+        }
+    }
+}
+</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-background text-on-surface font-sans antialiased min-h-screen flex flex-col">
+
+<header class="fixed top-0 w-full z-50 bg-surface-glass backdrop-blur-xl border-b border-white/5 h-20">
+    <div class="max-w-container-max-width mx-auto h-full px-margin-mobile md:px-margin-desktop flex justify-between items-center">
+        <a href="{{ url_for('home') }}" class="flex items-center gap-3">
+            <span style="font-size:26px;">🧠</span>
+            <span class="font-bold text-xl tracking-tight text-white">StressLens</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-10">
+            <a class="{{ 'nav-active border-b-2 border-primary' if active=='home' else 'text-on-surface-variant hover:text-primary' }} font-medium text-sm py-1 transition-colors" href="{{ url_for('home') }}">Home</a>
+            <a class="{{ 'nav-active border-b-2 border-primary' if active=='predict' else 'text-on-surface-variant hover:text-primary' }} font-medium text-sm py-1 transition-colors" href="{{ url_for('predict') }}">Predict</a>
+            <a class="{{ 'nav-active border-b-2 border-primary' if active=='insights' else 'text-on-surface-variant hover:text-primary' }} font-medium text-sm py-1 transition-colors" href="{{ url_for('insights') }}">Insights</a>
+            <a class="{{ 'nav-active border-b-2 border-primary' if active=='models' else 'text-on-surface-variant hover:text-primary' }} font-medium text-sm py-1 transition-colors" href="{{ url_for('models_page') }}">Models</a>
+        </nav>
+        <div class="w-10 h-10 rounded-full border border-white/10 bg-surface-container flex items-center justify-center text-lg">🎓</div>
+    </div>
+</header>
+
+<main class="flex-grow pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto w-full">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="w-full py-12 px-margin-mobile md:px-margin-desktop bg-surface-container-lowest border-t border-white/5 mt-auto">
+    <div class="max-w-container-max-width mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex flex-col gap-2 items-center md:items-start">
+            <div class="flex items-center gap-2">
+                <span style="font-size:20px;">🧠</span>
+                <span class="font-bold text-lg text-primary">StressLens</span>
+            </div>
+            <span class="text-xs text-text-muted">Ensemble Learning Micro-Project · Built with Decision Tree, Random Forest &amp; Gradient Boosting</span>
+        </div>
+        <div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+            <span class="text-[11px] text-text-muted uppercase tracking-widest">Sleep Health &amp; Lifestyle Dataset (Kaggle)</span>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
